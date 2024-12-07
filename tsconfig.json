@@ -12,6 +12,6 @@
     "noEmit": true,
     "moduleResolution": "node"
   },
-  "include": ["dia-*/**/*.ts", "vite.config.ts"],
+  "include": ["dia-*/**/*.ts", "vite.config.ts", "eslint.config.js"],
   "exclude": ["node_modules", "dist"]
 }

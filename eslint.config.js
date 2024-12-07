@@ -1,8 +1,8 @@
 import love from 'eslint-config-love';
 
 export default [
+  love,
   {
-    ...love,
     files: ['**/*.ts'],
     rules: {
       'no-magic-numbers': 'off',
