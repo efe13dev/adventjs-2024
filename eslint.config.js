@@ -1,22 +1,21 @@
 import love from 'eslint-config-love';
-import tseslint from '@typescript-eslint/eslint-plugin';
-import tsParser from '@typescript-eslint/parser';
 
 export default [
   {
     ...love,
     files: ['**/*.ts'],
-    languageOptions: {
-      parser: tsParser,
-      parserOptions: {
-        project: './tsconfig.json'
-      }
-    },
-    plugins: {
-      '@typescript-eslint': tseslint
-    },
     rules: {
+      'no-magic-numbers': 'off',
+      '@typescript-eslint/no-magic-numbers': 'off',
       'no-console': 'warn'
+    }
+  },
+  {
+    languageOptions: {
+      parserOptions: {
+        project: true,
+        tsconfigDirName: import.meta.dirname
+      }
     }
   }
 ];
