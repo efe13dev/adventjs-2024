@@ -7,7 +7,11 @@ export default [
     rules: {
       'no-magic-numbers': 'off',
       '@typescript-eslint/no-magic-numbers': 'off',
-      'no-console': 'warn'
+      'no-console': 'warn',
+      '@typescript-eslint/prefer-destructuring': [
+        'error',
+        { object: true, array: false }
+      ]
     }
   },
   {
