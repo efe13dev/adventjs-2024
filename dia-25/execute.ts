@@ -1,69 +1,95 @@
+// Funciones auxiliares
 function execute(code: string): number {
-  let value = 0; // Valor inicial
-  const stack: number[] = []; // Pila para manejar bucles
-  const instructions: string[] = code.split(''); // Dividir el código en instrucciones
-  let pointer = 0; // Puntero para recorrer las instrucciones
+  function handleLoop(
+    instructions: string[],
+    pointer: number,
+    openChar: string,
+    closeChar: string
+  ): number {
+    let openCount = 1;
+    while (openCount > 0) {
+      pointer++;
+      if (instructions[pointer] === openChar) openCount++;
+      if (instructions[pointer] === closeChar) openCount--;
+    }
+    return pointer;
+  }
 
-  while (pointer < instructions.length) {
-    const instruction = instructions[pointer];
+  interface ExecutionState {
+    value: number;
+    pointer: number;
+    stack: number[];
+    instructions: string[];
+  }
 
+  function processInstruction(
+    instruction: string,
+    state: ExecutionState
+  ): void {
     switch (instruction) {
-      case '>':
-        pointer++; // Mover al siguiente carácter
-        break;
       case '+':
-        value++; // Incrementar el valor
-        pointer++;
+        state.value++;
+        state.pointer++;
         break;
       case '-':
-        value--; // Decrementar el valor
-        pointer++;
+        state.value--;
+        state.pointer++;
         break;
       case '[':
-        if (value === 0) {
-          // Saltar al siguiente carácter después de ']'
-          let openBrackets = 1;
-          while (openBrackets > 0) {
-            pointer++;
-            if (instructions[pointer] === '[') openBrackets++;
-            if (instructions[pointer] === ']') openBrackets--;
-          }
+        if (state.value === 0) {
+          state.pointer = handleLoop(
+            state.instructions,
+            state.pointer,
+            '[',
+            ']'
+          );
         } else {
-          stack.push(pointer); // Guardar la posición del bucle
-          pointer++;
+          state.stack.push(state.pointer);
         }
+        state.pointer++;
         break;
       case ']':
-        if (value !== 0) {
-          // Volver a la posición del bucle
-          pointer = stack[stack.length - 1];
+        if (state.value !== 0) {
+          state.pointer = state.stack[state.stack.length - 1];
         } else {
-          stack.pop(); // Salir del bucle
-          pointer++;
+          state.stack.pop();
         }
+        state.pointer++;
         break;
       case '{':
-        if (value === 0) {
-          // Saltar al siguiente carácter después de '}'
-          let openBraces = 1;
-          while (openBraces > 0) {
-            pointer++;
-            if (instructions[pointer] === '{') openBraces++;
-            if (instructions[pointer] === '}') openBraces--;
-          }
-        } else {
-          pointer++;
+        if (state.value === 0) {
+          state.pointer = handleLoop(
+            state.instructions,
+            state.pointer,
+            '{',
+            '}'
+          );
         }
+        state.pointer++;
         break;
       case '}':
-        pointer++;
+        state.pointer++;
         break;
       default:
-        pointer++; // Ignorar caracteres no reconocidos
+        state.pointer++;
+        break;
     }
   }
 
-  return value; // Devolver el valor final
+  let value = 0;
+  const stack: number[] = [];
+  const instructions: string[] = code.split('');
+  let pointer = 0;
+
+  const state: ExecutionState = { value, pointer, stack, instructions };
+
+  while (pointer < instructions.length) {
+    processInstruction(instructions[pointer], state);
+    ({ value } = state);
+    ({ pointer } = state);
+  }
+
+  return value;
 }
 
 export default execute;
